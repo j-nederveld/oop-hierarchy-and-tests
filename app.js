@@ -10,11 +10,10 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
+//empty array to be populated as the user creates their team
 let teamMembers = [];
 
-// Write code to use inquirer to gather information about the development team members,
-// and to create objects for each team member (using the correct classes as blueprints!)
-//ask the appropriate questions
+// Create team function lets user choose the Type of employee they want to add, and then calls the create function based on that Employee type
 function createTeam(){
     inquirer.prompt([
     {
@@ -42,28 +41,31 @@ inquirer.prompt([
     {
     type: "input",
     message: "What is your manager's name?",
-    name: "name"
+    name: "name",
+    validate: validateName
     },
     {
     type: "input",
     message: "What is your manager's ID number?",
-    name: "id"
+    name: "id",
+    validate: validateNumber
     },
     {
     type: "input",
     message: "What is your manager's email address?",
-    name: "email"
+    name: "email",
+    validate: validateEmail
     },
     {
     type: "input",
     message: "What is your manager's office number?",
-    name: "officeNumber"
+    name: "officeNumber",
+    validate: validateNumber
     }
   ])
   .then(function(response) {
-    
+    //create new Manager, and push to the teamMembers array
     var newManager = new Manager(response.name, response.id, response.email, response.officeNumber)
-
     teamMembers.push(newManager);
     addTeamMember()
 })
@@ -74,17 +76,20 @@ inquirer.prompt([
     {
     type: "input",
     message: "What is your engineer's name?",
-    name: "name"
+    name: "name",
+    validate: validateName
     },
     {
     type: "input",
     message: "What is your engineer's ID number?",
-    name: "id"
+    name: "id",
+    validate: validateNumber
     },
     {
     type: "input",
     message: "What is your engineer's email address?",
-    name: "email"
+    name: "email",
+    validate: validateEmail
     },
     {
     type: "input",
@@ -93,9 +98,8 @@ inquirer.prompt([
     }
     ])
     .then(function(response) {
-   
+   //create new Engineer, and push to the teamMembers array
     var newEngineer = new Engineer(response.name, response.id, response.email, response.github)
-
     teamMembers.push(newEngineer);
     addTeamMember()
 })
@@ -105,53 +109,56 @@ inquirer.prompt([
     {
     type: "input",
     message: "What is your intern's name?",
-    name: "name"
+    name: "name",
+    validate: validateName
     },
     {
     type: "input",
     message: "What is your intern's ID number?",
-    name: "id"
+    name: "id",
+    validate: validateNumber
     },
     {
     type: "input",
     message: "What is your intern's email address?",
-    name: "email"
+    name: "email",
+    validate: validateEmail
     },
 {
     type: "input",
     message: "What is your intern's school?",
-    name: "school"
+    name: "school",
+    validate: validateName
     }
     ])
     .then(function(response) {
-   
+   //create new Intern, and push to the teamMembers array
     var newIntern = new Intern(response.name, response.id, response.email, response.school)
-
     teamMembers.push(newIntern);
-    console.log(newIntern.getRole());
-
     addTeamMember()
 })
 }
 
+//ask if user wants to add another Employee, if so then call the createTeam function and choose type. If not, render the HTML
 function addTeamMember(){
     inquirer.prompt([
     {
-    type: "confirm",
+    type: "list",
     message: "Would you like to add another Employee?",
-    name: "add"
+    choices: ["Yes", "No"],
+    name: "add",
     }
     ])
     .then(function(add){
-        if (add.add){
+        if (add.add === "Yes"){
             createTeam();
         }
-        else {
+        else if (add.add === "No") {
             renderHTML();
         }
     })
 }
-
+//make 'output' folder if necessary, and write the file to it
 function renderHTML(){
     console.log(teamMembers)
     const generatedFile = render(teamMembers);
@@ -168,24 +175,38 @@ function renderHTML(){
     });
 }
 
+//initial call for creating the team
 createTeam();
 
-// After the user has input all employees desired, call the `render` function (required
-// above) and pass in an array containing all employee objects; the `render` function will
-// generate and return a block of HTML including templated divs for each employee!
+//validate that the Name is not empty and that it does not contain numbers
+const validateName = async (input) => {
+    if (input === ""){
+        return "Please enter a name"
+    }
+    if  (/\d/.test(input)) {
+       return "This option should not contain numbers.";
+    }
+    return true;
+ };
 
-// After you have your html, you're now ready to create an HTML file using the HTML
-// returned from the `render` function. Now write it to a file named `team.html` in the
-// `output` folder. You can use the variable `outputPath` above target this location.
-// Hint: you may need to check if the `output` folder exists and create it if it
-// does not.
+//validate the ID number to be a number, and make sure it is not empty
+ const validateNumber = async (input) => {
+    if (input === ""){
+        return "Please enter a valid number"
+    }
+    if(isNaN(input)) {
+       return "This should be a number.";
+    }
+    return true;
+ };
 
-// HINT: each employee type (manager, engineer, or intern) has slightly different
-// information; write your code to ask different questions via inquirer depending on
-// employee type.
-
-// HINT: make sure to build out your classes first! Remember that your Manager, Engineer,
-// and Intern classes should all extend from a class named Employee; see the directions
-// for further information. Be sure to test out each class and verify it generates an
-// object with the correct structure and methods. This structure will be crucial in order
-// for the provided `render` function to work! ```
+//validate email is in the proper format (follows example found here: https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript)
+ const validateEmail = async (email) => {
+    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (re.test(String(email).toLowerCase())) {
+        return true;
+    }
+    else {
+        return "Please enter valid email."
+    }
+}
