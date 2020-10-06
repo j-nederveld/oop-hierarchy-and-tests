@@ -13,3 +13,9 @@ class Intern extends Employee {
         return 'Intern';
     }
 }
+
+var bob = new Intern("bob", 4, "bob@gmail.com", "lhs")
+
+console.log(bob.getRole())
+
+module.exports = Intern;

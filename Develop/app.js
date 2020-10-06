@@ -10,9 +10,165 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
+let teamMembers = [];
 
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
+//ask the appropriate questions
+function createTeam(){
+    inquirer.prompt([
+    {
+        type: "list",
+        message: "What type of employee would you like to add?",
+        choices: ["Manager", "Engineer", "Intern"],
+        name: "type"
+    }
+    ])
+    .then(function(employee){
+        if (employee.type === "Manager"){
+            createManager();
+        }
+        if (employee.type === "Engineer"){
+            createEngineer();
+        }
+        if (employee.type === "Intern"){
+            createIntern();
+        }
+    })
+}
+
+function createManager(){
+inquirer.prompt([
+    {
+    type: "input",
+    message: "What is your manager's name?",
+    name: "name"
+    },
+    {
+    type: "input",
+    message: "What is your manager's ID number?",
+    name: "id"
+    },
+    {
+    type: "input",
+    message: "What is your manager's email address?",
+    name: "email"
+    },
+    {
+    type: "input",
+    message: "What is your manager's office number?",
+    name: "officeNumber"
+    }
+  ])
+  .then(function(response) {
+    
+    var newManager = new Manager(response.name, response.id, response.email, response.officeNumber)
+
+    teamMembers.push(newManager);
+    addTeamMember()
+})
+}
+
+function createEngineer(){
+inquirer.prompt([
+    {
+    type: "input",
+    message: "What is your engineer's name?",
+    name: "name"
+    },
+    {
+    type: "input",
+    message: "What is your engineer's ID number?",
+    name: "id"
+    },
+    {
+    type: "input",
+    message: "What is your engineer's email address?",
+    name: "email"
+    },
+    {
+    type: "input",
+    message: "What is your engineer's GitHub?",
+    name: "github"
+    }
+    ])
+    .then(function(response) {
+   
+    var newEngineer = new Engineer(response.name, response.id, response.email, response.github)
+
+    teamMembers.push(newEngineer);
+    addTeamMember()
+})
+}
+function createIntern(){
+inquirer.prompt([
+    {
+    type: "input",
+    message: "What is your intern's name?",
+    name: "name"
+    },
+    {
+    type: "input",
+    message: "What is your intern's ID number?",
+    name: "id"
+    },
+    {
+    type: "input",
+    message: "What is your intern's email address?",
+    name: "email"
+    },
+{
+    type: "input",
+    message: "What is your intern's school?",
+    name: "school"
+    }
+    ])
+    .then(function(response) {
+   
+    var newIntern = new Intern(response.name, response.id, response.email, response.school)
+
+    teamMembers.push(newIntern);
+    console.log(newIntern.getRole());
+
+    addTeamMember()
+})
+}
+
+function addTeamMember(){
+    inquirer.prompt([
+    {
+    type: "confirm",
+    message: "Would you like to add another Employee?",
+    name: "add"
+    }
+    ])
+    .then(function(add){
+        if (add.add){
+            createTeam();
+        }
+        else {
+            renderHTML();
+        }
+    })
+}
+
+function renderHTML(){
+    console.log(teamMembers)
+    const generatedFile = render(teamMembers);
+
+    // Creates /tmp/a/apple, regardless of whether `/tmp` and /tmp/a exist.
+    fs.mkdir(OUTPUT_DIR, { recursive: true }, (err) => {
+        if (err) throw err;
+    fs.writeFile(outputPath, generatedFile, (err) => {
+        if (err){
+            return console.log(err);
+        }
+        console.log("File written!");
+        });
+    });
+}
+
+createTeam();
 
 // After the user has input all employees desired, call the `render` function (required
 // above) and pass in an array containing all employee objects; the `render` function will

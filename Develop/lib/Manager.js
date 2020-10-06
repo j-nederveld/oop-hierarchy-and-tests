@@ -6,7 +6,7 @@ class Manager extends Employee {
         super(name, id, email);
         this.officeNumber = officeNumber;
     }
-    getOfficeumber() {
+    getOfficeNumber() {
         return this.officeNumber;
     }
     getRole() {
@@ -14,8 +14,4 @@ class Manager extends Employee {
     }
 }
 
-var Bob = new Manager('bob', 33, 'bob@test.com', 8632558934)
-
-console.log(Bob.getEmail());
-
-console.log(Bob.getRole())
+module.exports = Manager;

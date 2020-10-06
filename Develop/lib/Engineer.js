@@ -14,8 +14,4 @@ class Engineer extends Employee {
     }
 }
 
-var Bob = new Engineer('larry', 33, 'bob@test.com', 'j-nederveld')
-
-console.log(Bob);
-
-console.log(Bob.getRole())
+module.exports = Engineer;
