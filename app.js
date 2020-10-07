@@ -160,7 +160,6 @@ function addTeamMember(){
 }
 //make 'output' folder if necessary, and write the file to it
 function renderHTML(){
-    console.log(teamMembers)
     const generatedFile = render(teamMembers);
 
     // Creates /tmp/a/apple, regardless of whether `/tmp` and /tmp/a exist.
