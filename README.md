@@ -21,6 +21,8 @@ npm i
 
 Install dependencies and then run "node app.js" in the integrated terminal.
 
+https://www.loom.com/share/c853ea34fc1e42ef880be3cb03a17227
+
 ## Credits
 
 
